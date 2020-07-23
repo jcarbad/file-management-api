@@ -1,12 +1,9 @@
 package io.carba.filemanagement.controllers;
 
-import com.sun.tools.javac.util.ArrayUtils;
-import io.carba.filemanagement.dtos.FileDto;
 import io.carba.filemanagement.model.File;
 import io.carba.filemanagement.model.FileVersion;
-import io.carba.filemanagement.repositories.FileVersionRepository;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.http.MediaType;
+import io.carba.filemanagement.services.FileService;
+import io.carba.filemanagement.services.FileVersionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,20 +13,28 @@ import java.util.Optional;
 @RequestMapping("files")
 public class FileManagementController {
 
-   private final FileVersionRepository fileVersionRepository;
+   private final FileService fileService;
+   private final FileVersionService fileVersionService;
 
-   public FileManagementController(FileVersionRepository fileVersionRepository) {
-      this.fileVersionRepository = fileVersionRepository;
+   public FileManagementController(FileService fileService, FileVersionService fileVersionService) {
+      this.fileService = fileService;
+      this.fileVersionService = fileVersionService;
    }
 
    @GetMapping(value = "/{fileId}")
-   private ResponseEntity<byte[]> fetchFile(@PathVariable String fileId, @RequestParam(required = false) String version) {
-      Optional<FileVersion> fileVersion = fileVersionRepository.findFirstByParentFileOrderBySequenceNumberAsc(new File(){{setFileId(Long.parseLong(fileId));}});
-      byte[] result = fileVersion.isPresent() ? fileVersion.get().getFile() : new byte[]{0,0,1,0,0,1,0,1};
+   private ResponseEntity<byte[]> fetchFile(@PathVariable Long fileId, @RequestParam(required = false) Long version) {
+      FileVersion fileVersion = fileVersionService.getFileVersionByParentIdAndVersion(fileId, version).orElse(null);
+      File file = fileService.getAllById(fileId).orElse(null);
 
-      return ResponseEntity.ok().header("Content-Type", MediaType.IMAGE_JPEG_VALUE).body(result);
+      if (fileVersion == null || file == null) {
+         return ResponseEntity.notFound().build();
+      }
+
+      return ResponseEntity.ok()
+            .header("Content-Type", file.getMediaType())
+            .body(fileVersion.getFile());
    }
-
+/**
    @GetMapping("/{fileId}/all")
    private byte[][] fetchAll(@PathVariable String fileId) {
       return new byte[][]{"A".getBytes(), "B".getBytes()};
@@ -54,4 +59,6 @@ public class FileManagementController {
    private String deleteAll(@PathVariable String fileId) {
       return "Deleted all versions of " + fileId;
    }
+
+   */
 }

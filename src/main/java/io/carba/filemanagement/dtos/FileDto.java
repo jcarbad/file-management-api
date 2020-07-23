@@ -9,8 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 public class FileDto
 {
-   private final String fileId;
-   private final String version;
+   private final Long fileId;
+   private final Long version;
    private final String name;
    private final String mimeType;
    private final String description;
