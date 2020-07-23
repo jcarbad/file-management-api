@@ -1,5 +1,6 @@
 package io.carba.filemanagement.controllers;
 
+import io.carba.filemanagement.dtos.CreateFileDto;
 import io.carba.filemanagement.dtos.FileDto;
 import io.carba.filemanagement.dtos.FileVersionDto;
 import io.carba.filemanagement.model.File;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -75,12 +77,14 @@ public class FileManagementController {
    private FileDto saveFile() {
       return FileDto.builder().fileId("File #1").build();
    }
+*/
 
    @PutMapping("/{fileId}")
-   private String updateFile(@PathVariable String fileId) {
-      return "GOT file{id: " + fileId + ", version: latest + 1}";
+   @ResponseStatus(HttpStatus.NO_CONTENT)
+   private void updateFile(@PathVariable Long fileId, @Valid @RequestBody CreateFileDto fileData) throws Exception {
+      fileService.updateFile(fileId, fileData, new byte[0]);
    }
-
+/**
    @DeleteMapping("/{fileId}")
    private String deleteFile(@PathVariable String fileId, @RequestParam String version) {
       return "Deleted {file: " + fileId + ", version: " + version + "}";

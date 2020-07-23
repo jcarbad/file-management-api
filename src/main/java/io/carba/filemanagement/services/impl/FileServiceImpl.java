@@ -1,5 +1,6 @@
 package io.carba.filemanagement.services.impl;
 
+import io.carba.filemanagement.dtos.CreateFileDto;
 import io.carba.filemanagement.dtos.FileDto;
 import io.carba.filemanagement.model.File;
 import io.carba.filemanagement.model.FileVersion;
@@ -37,17 +38,8 @@ public class FileServiceImpl implements FileService {
    }
 
    @Override
-   public Optional<File> updateFile(FileDto update, byte[] file) throws Exception {
-      if (file.length == 0) {
-         throw new Exception("Invalid file");
-      }
-
-      List<FileVersion> fileVersions = fileVersionService.getAllVersionsByParentId(update.getFileId()).orElse(null);
-      if (fileVersions == null) {
-         throw new Exception("invalid");
-      }
-
-      File existing = fileRepository.findByFileId(update.getFileId()).orElse(null);
+   public Optional<File> updateFile(Long fileId, CreateFileDto update, byte[] file) throws Exception {
+      File existing = fileRepository.findByFileId(fileId).orElse(null);
       if (existing == null) {
          throw new Exception("Non existing");
       }
@@ -56,19 +48,10 @@ public class FileServiceImpl implements FileService {
       existing.setDescription(update.getDescription());
       existing.setMediaType(update.getMimeType());
 
-      long lastSequence = fileVersions.stream()
-            .mapToLong(FileVersion::getSequenceNumber)
-            .sorted()
-            .findFirst()
-            .orElse(0);
-
-      FileVersion newVersion = FileVersion.builder()
-            .parentFile(existing)
-            .sequenceNumber(lastSequence == 0L ? 0L : lastSequence + 1L)
-            .file(file)
-            .build();
-
-      existing.getVersions().add(newVersion);
+      if (file.length != 0) {
+         FileVersion newVersion = updateFileVersion(fileId, file);
+         existing.getVersions().add(newVersion);
+      }
 
       return Optional.of(fileRepository.save(existing));
    }
@@ -76,5 +59,24 @@ public class FileServiceImpl implements FileService {
    @Override
    public void deleteAllById(Long fileId) {
       fileRepository.delete(File.builder().fileId(fileId).build());
+   }
+
+   private FileVersion updateFileVersion(Long fileId, byte[] file) throws Exception
+   {
+      List<FileVersion> fileVersions = fileVersionService.getAllVersionsByParentId(fileId).orElse(null);
+      if (fileVersions == null) {
+         throw new Exception("invalid");
+      }
+
+      long lastSequence = fileVersions.stream()
+            .mapToLong(FileVersion::getSequenceNumber)
+            .sorted()
+            .findFirst()
+            .orElse(0);
+
+      return FileVersion.builder()
+            .sequenceNumber(lastSequence == 0L ? 0L : lastSequence + 1L)
+            .file(file)
+            .build();
    }
 }
