@@ -5,14 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -22,14 +20,21 @@ import java.util.Set;
 public class File {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private Long id;
+
    private Long fileId;
+
    private String filename;
+
    private String description;
+
+   private Long version;
+
    private String mediaType;
 
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentFile")
-   @OnDelete(action = OnDeleteAction.CASCADE)
-   private List<FileVersion> versions;
+   @Lob
+   @Basic(fetch = FetchType.LAZY)
+   private byte[] contents;
 
    @CreationTimestamp
    private LocalDateTime createdAt;

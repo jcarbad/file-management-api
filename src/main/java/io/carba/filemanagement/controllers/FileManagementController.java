@@ -1,22 +1,20 @@
 package io.carba.filemanagement.controllers;
 
-import io.carba.filemanagement.dtos.CreateFileDto;
 import io.carba.filemanagement.dtos.FileDto;
-import io.carba.filemanagement.dtos.FileVersionDto;
 import io.carba.filemanagement.model.File;
-import io.carba.filemanagement.model.FileVersion;
 import io.carba.filemanagement.services.FileService;
-import io.carba.filemanagement.services.FileVersionService;
-import io.carba.filemanagement.services.impl.FileVersionServiceImpl;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -24,76 +22,70 @@ import java.util.stream.Collectors;
 public class FileManagementController {
 
    private final FileService fileService;
-   private final FileVersionService fileVersionService;
 
-   public FileManagementController(FileService fileService, FileVersionService fileVersionService) {
+   public FileManagementController(FileService fileService) {
       this.fileService = fileService;
-      this.fileVersionService = fileVersionService;
    }
 
    @GetMapping(value = "/{fileId}")
-   private ResponseEntity<byte[]> fetchFile(@PathVariable Long fileId, @RequestParam(required = false) Long version) {
-      FileVersion fileVersion = fileVersionService.getFileVersionByParentIdAndVersion(fileId, version).orElse(null);
-      File file = fileService.getAllById(fileId).orElse(null);
+   @ResponseStatus(HttpStatus.OK)
+   private ResponseEntity<byte[]> fetchFile(@PathVariable Long fileId, @RequestParam(required = false) Long version) throws Exception {
+      File file = fileService.getFileVersion(fileId, version);
 
-      if (fileVersion == null || file == null) {
-         return ResponseEntity.notFound().build();
+      if (file == null) {
+         throw new Exception("File not found");
       }
 
       return ResponseEntity.ok()
             .header("Content-Type", file.getMediaType())
-            .body(fileVersion.getFile());
+            .body(file.getContents());
    }
 
 
    @GetMapping(value = "/{fileId}/all")
    @ResponseStatus(HttpStatus.OK)
-   private FileDto fetchAll(@PathVariable Long fileId) throws Exception
-   {
-      File file = fileService.getAllById(fileId).orElse(null);
+   private FileDto.Response fetchAll(@Valid @PathVariable @Min(1) Long fileId) throws Exception {
+      List<File> files = fileService.getAllFiles(fileId);
 
-      if (file == null) {
-         throw new Exception("Not found");
+      if (CollectionUtils.isEmpty(files)) {
+         throw new Exception("File not Found");
       }
 
-      List<FileVersionDto> fileVersions = fileVersionService.getAllVersionsByParentId(fileId).orElse(Collections.emptyList()).stream()
-            .map(fv -> FileVersionDto.builder()
-               .uri("/files/" + fileId + "?version=" + fv.getSequenceNumber())
-               .version(fv.getSequenceNumber())
-               .build())
-            .collect(Collectors.toList());
-
-      return FileDto.builder()
-            .fileId(fileId)
-            .name(file.getFilename())
-            .mimeType(file.getMediaType())
-            .description(file.getDescription())
-            .versions(fileVersions)
-            .build();
+      return FileDto.Response.fromFileModels(files);
    }
 
-/**
    @PostMapping
-   private FileDto saveFile() {
-      return FileDto.builder().fileId("File #1").build();
+   @ResponseStatus(HttpStatus.CREATED)
+   private FileDto.Response saveFile(@Valid @RequestBody FileDto.Request fileData, @RequestParam MultipartFile file) throws Exception {
+      File created = fileService.createFile(fileData, file.getBytes());
+      return FileDto.Response.fromFileModel(created);
    }
-*/
+
 
    @PutMapping("/{fileId}")
    @ResponseStatus(HttpStatus.NO_CONTENT)
-   private void updateFile(@PathVariable Long fileId, @Valid @RequestBody CreateFileDto fileData) throws Exception {
-      fileService.updateFile(fileId, fileData, new byte[0]);
+   private void updateFile(@Valid @PathVariable @Min(1) Long fileId, @Valid @RequestBody FileDto.Request fileData, @RequestParam MultipartFile file) throws Exception {
+      if (fileId == null) {
+         throw new Exception("File ID must be provided");
+      }
+
+      fileService.editFile(fileId, fileData, file.getBytes());
    }
 
    @DeleteMapping("/{fileId}")
    @ResponseStatus(HttpStatus.NO_CONTENT)
-   private void deleteFileVersion(@PathVariable Long fileId, @RequestParam Long version) {
-      fileVersionService.deleteFileVersion(fileId, version);
+   private void deleteFileVersion(@Valid @PathVariable @Min(1) Long fileId, @Valid @RequestParam @Min(1) Long version) throws Exception {
+      if (version == null) {
+         throw new Exception("File version must be provided");
+      }
+
+      fileService.deleteFileVersion(fileId, version);
    }
 
 
    @DeleteMapping("/{fileId}/all")
-   private void deleteAll(@PathVariable Long fileId) {
-      fileService.deleteAllById(fileId);
+   @ResponseStatus(HttpStatus.NO_CONTENT)
+   private void deleteAll(@Valid @PathVariable @Min(1) Long fileId) throws Exception {
+      fileService.deleteAllByFileId(fileId);
    }
 }

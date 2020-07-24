@@ -1,13 +1,20 @@
 package io.carba.filemanagement.services;
 
-import io.carba.filemanagement.dtos.CreateFileDto;
 import io.carba.filemanagement.dtos.FileDto;
 import io.carba.filemanagement.model.File;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface FileService {
-   Optional<File> getAllById(Long fileId);
-   Optional<File> updateFile(Long fileId, CreateFileDto update, byte[] file) throws Exception;
-   void deleteAllById(Long fileId);
+   File createFile(FileDto.Request create, byte[] contents) throws Exception;
+
+   File getFileVersion(Long fileId, Long version) throws Exception;
+
+   List<File> getAllFiles(Long fileId) throws Exception;
+
+   File editFile(Long fileId, FileDto.Request update, byte[] contents) throws Exception;
+
+   void deleteFileVersion(Long fileId, Long version) throws Exception;
+
+   void deleteAllByFileId(Long fileId) throws Exception;
 }
