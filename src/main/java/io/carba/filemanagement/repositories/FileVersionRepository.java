@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +20,7 @@ public interface FileVersionRepository extends CrudRepository<FileVersion, Long>
 
    @Query("SELECT fv from FileVersion fv WHERE fv.parentFile = :parent AND fv.sequenceNumber = :sequenceNum")
    Optional<FileVersion> findExactVersion(File parent, Long sequenceNum);
+
+   @Transactional
+   void deleteFileVersionByParentFileAndSequenceNumberEquals(File parent, Long sequenceNum);
 }

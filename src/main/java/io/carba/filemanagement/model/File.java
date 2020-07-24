@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -26,6 +28,7 @@ public class File {
    private String mediaType;
 
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentFile")
+   @OnDelete(action = OnDeleteAction.CASCADE)
    private List<FileVersion> versions;
 
    @CreationTimestamp

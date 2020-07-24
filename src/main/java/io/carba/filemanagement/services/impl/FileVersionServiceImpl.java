@@ -4,12 +4,14 @@ import io.carba.filemanagement.model.File;
 import io.carba.filemanagement.model.FileVersion;
 import io.carba.filemanagement.repositories.FileVersionRepository;
 import io.carba.filemanagement.services.FileVersionService;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Log
 @Service
 public class FileVersionServiceImpl implements FileVersionService {
    private final FileVersionRepository fileVersionRepository;
@@ -49,11 +51,8 @@ public class FileVersionServiceImpl implements FileVersionService {
             .fileId(parentId)
             .build();
 
-      FileVersion fileVersion = FileVersion.builder()
-            .parentFile(parent)
-            .sequenceNumber(version)
-            .build();
+      log.info("\n\n\n\n" + parent.toString());
 
-      fileVersionRepository.delete(fileVersion);
+      fileVersionRepository.deleteFileVersionByParentFileAndSequenceNumberEquals(parent, version);
    }
 }

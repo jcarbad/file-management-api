@@ -84,16 +84,16 @@ public class FileManagementController {
    private void updateFile(@PathVariable Long fileId, @Valid @RequestBody CreateFileDto fileData) throws Exception {
       fileService.updateFile(fileId, fileData, new byte[0]);
    }
-/**
+
    @DeleteMapping("/{fileId}")
-   private String deleteFile(@PathVariable String fileId, @RequestParam String version) {
-      return "Deleted {file: " + fileId + ", version: " + version + "}";
+   @ResponseStatus(HttpStatus.NO_CONTENT)
+   private void deleteFileVersion(@PathVariable Long fileId, @RequestParam Long version) {
+      fileVersionService.deleteFileVersion(fileId, version);
    }
+
 
    @DeleteMapping("/{fileId}/all")
-   private String deleteAll(@PathVariable String fileId) {
-      return "Deleted all versions of " + fileId;
+   private void deleteAll(@PathVariable Long fileId) {
+      fileService.deleteAllById(fileId);
    }
-
-   */
 }
