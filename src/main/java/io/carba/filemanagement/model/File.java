@@ -6,11 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Data
 @Builder
@@ -19,7 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 public class File {
    @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @GeneratedValue(strategy = IDENTITY)
    private Long id;
 
    private Long fileId;
@@ -33,7 +32,7 @@ public class File {
    private String mediaType;
 
    @Lob
-   @Basic(fetch = FetchType.LAZY)
+   @Basic(fetch = LAZY)
    private byte[] contents;
 
    @CreationTimestamp

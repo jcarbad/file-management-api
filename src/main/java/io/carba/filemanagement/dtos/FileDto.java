@@ -1,20 +1,19 @@
 package io.carba.filemanagement.dtos;
 
 import io.carba.filemanagement.model.File;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.constraints.NotNull;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import static java.util.Collections.singletonList;
 
 public class FileDto {
    @Data
    @Builder
    @NoArgsConstructor
    @AllArgsConstructor
-   @ToString
    public static class Request
    {
       private String filename;
@@ -25,7 +24,6 @@ public class FileDto {
 
    @Data
    @Builder
-   @ToString
    public static class Response {
       private final Long fileId;
       private final String createdAt;
@@ -40,7 +38,7 @@ public class FileDto {
       }
 
       public static Response fromFileModel(File fileModel) {
-         return fromFileModels(Collections.singletonList(fileModel));
+         return fromFileModels(singletonList(fileModel));
       }
    }
 }

@@ -1,20 +1,15 @@
 package io.carba.filemanagement.services.impl;
 
 import io.carba.filemanagement.dtos.FileDto;
+import io.carba.filemanagement.exceptions.InvalidFileArgException;
 import io.carba.filemanagement.model.File;
 import io.carba.filemanagement.repositories.FileRepository;
 import io.carba.filemanagement.services.FileService;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
-
-import static org.springframework.util.StringUtils.*;
+import static org.springframework.util.StringUtils.isEmpty;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -26,9 +21,9 @@ public class FileServiceImpl implements FileService {
    }
 
    @Override
-   public File createFile(FileDto.Request create, byte[] contents) throws Exception {
+   public File createFile(FileDto.Request create, byte[] contents) throws InvalidFileArgException {
       if (contents.length == 0) {
-         throw new Exception("File contents can't be empty");
+         throw new InvalidFileArgException("File contents can't be empty");
       }
 
       String filename = create.getFilename();
@@ -36,7 +31,7 @@ public class FileServiceImpl implements FileService {
       String mediaType = create.getMediaType();
 
       if (Stream.of(filename, description, mediaType).anyMatch(StringUtils::isEmpty)) {
-         throw new Exception("File name, description and media type must be provided");
+         throw new InvalidFileArgException("File name, description and media type must be provided");
       }
 
       Long last = fileRepository.countExistingByFileId();
@@ -54,9 +49,9 @@ public class FileServiceImpl implements FileService {
    }
 
    @Override
-   public File editFile(Long fileId, FileDto.Request update, byte[] contents) throws Exception {
+   public File editFile(Long fileId, FileDto.Request update, byte[] contents) throws InvalidFileArgException {
       if (fileId == null) {
-         throw new Exception("File ID must be provided");
+         throw new InvalidFileArgException("File ID must be provided");
       }
 
       String filename = update.getFilename();
@@ -79,9 +74,9 @@ public class FileServiceImpl implements FileService {
    }
 
    @Override
-   public File getFileVersion(Long fileId, Long version) throws Exception {
+   public File getFileVersion(Long fileId, Long version) throws InvalidFileArgException {
       if (fileId == null) {
-         throw new Exception("File ID must be provided");
+         throw new InvalidFileArgException("File ID must be provided");
       }
 
       return version == null
@@ -90,27 +85,27 @@ public class FileServiceImpl implements FileService {
    }
 
    @Override
-   public List<File> getAllFiles(Long fileId) throws Exception {
+   public List<File> getAllFiles(Long fileId) throws InvalidFileArgException {
       if (fileId == null) {
-         throw new Exception("File ID must be provided");
+         throw new InvalidFileArgException("File ID must be provided");
       }
 
       return fileRepository.findAllByFileId(fileId);
    }
 
    @Override
-   public void deleteFileVersion(Long fileId, Long version) throws Exception {
+   public void deleteFileVersion(Long fileId, Long version) throws InvalidFileArgException {
       if (fileId == null || version == null) {
-         throw new Exception("File ID and version must be provided");
+         throw new InvalidFileArgException("File ID and version must be provided");
       }
 
       fileRepository.deleteFileByFileIdAndVersionEquals(fileId, version);
    }
 
    @Override
-   public void deleteAllByFileId(Long fileId) throws Exception {
+   public void deleteAllByFileId(Long fileId) throws InvalidFileArgException {
       if (fileId == null) {
-         throw new Exception("File ID must be provided");
+         throw new InvalidFileArgException("File ID must be provided");
       }
 
       fileRepository.deleteAllByFileId(fileId);
