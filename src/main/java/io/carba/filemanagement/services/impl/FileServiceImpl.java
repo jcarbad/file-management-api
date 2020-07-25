@@ -54,26 +54,6 @@ public class FileServiceImpl implements FileService {
    }
 
    @Override
-   public File getFileVersion(Long fileId, Long version) throws Exception {
-      if (fileId == null) {
-         throw new Exception("File ID must be provided");
-      }
-
-      return version == null
-            ? fileRepository.findFirstByFileIdOrderByVersionDesc(fileId)
-            : fileRepository.findByFileIdAndVersionEquals(fileId, version);
-   }
-
-   @Override
-   public List<File> getAllFiles(Long fileId) throws Exception {
-      if (fileId == null) {
-         throw new Exception("File ID must be provided");
-      }
-
-      return fileRepository.findAllByFileId(fileId);
-   }
-
-   @Override
    public File editFile(Long fileId, FileDto.Request update, byte[] contents) throws Exception {
       if (fileId == null) {
          throw new Exception("File ID must be provided");
@@ -96,6 +76,26 @@ public class FileServiceImpl implements FileService {
             .build();
 
       return fileRepository.save(updatedFile);
+   }
+
+   @Override
+   public File getFileVersion(Long fileId, Long version) throws Exception {
+      if (fileId == null) {
+         throw new Exception("File ID must be provided");
+      }
+
+      return version == null
+            ? fileRepository.findFirstByFileIdOrderByVersionDesc(fileId)
+            : fileRepository.findByFileIdAndVersionEquals(fileId, version);
+   }
+
+   @Override
+   public List<File> getAllFiles(Long fileId) throws Exception {
+      if (fileId == null) {
+         throw new Exception("File ID must be provided");
+      }
+
+      return fileRepository.findAllByFileId(fileId);
    }
 
    @Override

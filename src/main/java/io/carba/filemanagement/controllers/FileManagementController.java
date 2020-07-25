@@ -43,9 +43,9 @@ public class FileManagementController {
    }
 
 
-   @GetMapping(value = "/{fileId}/all")
+   @GetMapping(value = "/{fileId}/details")
    @ResponseStatus(HttpStatus.OK)
-   private FileDto.Response fetchAll(@Valid @PathVariable @Min(1) Long fileId) throws Exception {
+   private FileDto.Response fetchAll(@PathVariable Long fileId) throws Exception {
       List<File> files = fileService.getAllFiles(fileId);
 
       if (CollectionUtils.isEmpty(files)) {
@@ -65,12 +65,12 @@ public class FileManagementController {
 
    @PutMapping("/{fileId}")
    @ResponseStatus(HttpStatus.NO_CONTENT)
-   private void updateFile(@PathVariable Long fileId, @Valid @RequestBody FileDto.Request fileData, @RequestParam MultipartFile file) throws Exception {
+   private void editFile(@PathVariable Long fileId, @ModelAttribute FileDto.Request fileData) throws Exception {
       if (fileId == null) {
          throw new Exception("File ID must be provided");
       }
 
-      fileService.editFile(fileId, fileData, file.getBytes());
+      fileService.editFile(fileId, fileData, fileData.getFile().getBytes());
    }
 
    @DeleteMapping("/{fileId}")
@@ -86,7 +86,7 @@ public class FileManagementController {
 
    @DeleteMapping("/{fileId}/all")
    @ResponseStatus(HttpStatus.NO_CONTENT)
-   private void deleteAll(@Valid @PathVariable @Min(1) Long fileId) throws Exception {
+   private void deleteAll(@PathVariable Long fileId) throws Exception {
       fileService.deleteAllByFileId(fileId);
    }
 }
