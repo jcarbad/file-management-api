@@ -4,6 +4,7 @@ import io.carba.filemanagement.dtos.FileDto;
 import io.carba.filemanagement.model.File;
 import io.carba.filemanagement.services.FileService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -54,17 +55,17 @@ public class FileManagementController {
       return FileDto.Response.fromFileModels(files);
    }
 
-   @PostMapping
+   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
    @ResponseStatus(HttpStatus.CREATED)
-   private FileDto.Response saveFile(@Valid @RequestBody FileDto.Request fileData, @RequestParam MultipartFile file) throws Exception {
-      File created = fileService.createFile(fileData, file.getBytes());
+   private FileDto.Response saveFile(@ModelAttribute FileDto.Request fileData) throws Exception {
+      File created = fileService.createFile(fileData, fileData.getFile().getBytes());
       return FileDto.Response.fromFileModel(created);
    }
 
 
    @PutMapping("/{fileId}")
    @ResponseStatus(HttpStatus.NO_CONTENT)
-   private void updateFile(@Valid @PathVariable @Min(1) Long fileId, @Valid @RequestBody FileDto.Request fileData, @RequestParam MultipartFile file) throws Exception {
+   private void updateFile(@PathVariable Long fileId, @Valid @RequestBody FileDto.Request fileData, @RequestParam MultipartFile file) throws Exception {
       if (fileId == null) {
          throw new Exception("File ID must be provided");
       }
@@ -74,7 +75,7 @@ public class FileManagementController {
 
    @DeleteMapping("/{fileId}")
    @ResponseStatus(HttpStatus.NO_CONTENT)
-   private void deleteFileVersion(@Valid @PathVariable @Min(1) Long fileId, @Valid @RequestParam @Min(1) Long version) throws Exception {
+   private void deleteFileVersion(@PathVariable Long fileId, @Valid @RequestParam @Min(1) Long version) throws Exception {
       if (version == null) {
          throw new Exception("File version must be provided");
       }

@@ -2,23 +2,25 @@ package io.carba.filemanagement.dtos;
 
 import io.carba.filemanagement.model.File;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FileDto
-{
+public class FileDto {
    @Data
    @Builder
+   @NoArgsConstructor
+   @AllArgsConstructor
    @ToString
-   @NotNull
    public static class Request
    {
-      private final String filename;
-      private final String mediaType;
-      private final String description;
+      private String filename;
+      private String mediaType;
+      private String description;
+      private MultipartFile file;
    }
 
    @Data

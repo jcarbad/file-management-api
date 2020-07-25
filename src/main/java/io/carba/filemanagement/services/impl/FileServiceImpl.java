@@ -39,7 +39,7 @@ public class FileServiceImpl implements FileService {
          throw new Exception("File name, description and media type must be provided");
       }
 
-      Long last = fileRepository.findLastFileId();
+      Long last = fileRepository.countExistingByFileId();
 
       File newFile = File.builder()
             .fileId(last == null ? 1L : last + 1L)

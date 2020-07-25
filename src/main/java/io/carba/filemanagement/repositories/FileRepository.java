@@ -17,8 +17,8 @@ public interface FileRepository extends CrudRepository<File, Long> {
 
    File findByFileIdAndVersionEquals(Long fileId, Long version);
 
-   @Query("SELECT f.fileId FROM File f ORDER BY f.fileId DESC")
-   Long findLastFileId();
+   @Query("SELECT count(DISTINCT f.fileId) FROM File f")
+   Long countExistingByFileId();
 
    @Transactional
    void deleteAllByFileId(Long fileId);
