@@ -25,30 +25,31 @@ public class FileManagementController {
 
    @ResponseStatus(CREATED)
    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
-   private FileDto.Response saveFile(@ModelAttribute FileDto.Request fileData) throws InvalidFileArgException, IOException {
+   public FileDto.Response saveFile(@ModelAttribute FileDto.Request fileData) throws InvalidFileArgException, IOException {
+      if (fileData == null || fileData.getFile() == null) {
+         throw new InvalidFileArgException("A file must be provided");
+      }
+
       File created = fileService.createFile(fileData, fileData.getFile().getBytes());
       return FileDto.Response.fromFileModel(created);
    }
 
    @ResponseStatus(NO_CONTENT)
    @PutMapping(value = "/{fileId}")
-   private void editFile(@PathVariable Long fileId, @ModelAttribute FileDto.Request fileData)
+   public void editFile(@PathVariable Long fileId, @ModelAttribute FileDto.Request fileData)
          throws InvalidFileArgException, IOException, FileNotFoundException {
-      if (fileId == null) {
-         throw new InvalidFileArgException("File ID must be provided");
-      }
 
-      fileService.editFile(fileId, fileData, fileData.getFile().getBytes());
+      fileService.editFile(fileId, fileData, fileData.getFile() != null ? fileData.getFile().getBytes() : new byte[0]);
    }
 
    @ResponseStatus(OK)
    @GetMapping(value = "/{fileId}")
-   private ResponseEntity<byte[]> fetchFile(@PathVariable Long fileId, @RequestParam(required = false) Long version)
+   public ResponseEntity<byte[]> fetchFile(@PathVariable Long fileId, @RequestParam(required = false) Long version)
          throws FileNotFoundException, InvalidFileArgException {
       File file = fileService.getFileVersion(fileId, version);
 
       if (file == null) {
-         throw new FileNotFoundException(fileId, version);
+         throw version == null ? new FileNotFoundException(fileId) : new FileNotFoundException(fileId, version);
       }
 
       return ResponseEntity.ok()
@@ -58,7 +59,7 @@ public class FileManagementController {
 
    @ResponseStatus(OK)
    @GetMapping(value = "/{fileId}/details")
-   private FileDto.Response fetchAll(@PathVariable Long fileId) throws FileNotFoundException, InvalidFileArgException {
+   public FileDto.Response fetchAll(@PathVariable Long fileId) throws FileNotFoundException, InvalidFileArgException {
       List<File> files = fileService.getAllFiles(fileId);
 
       if (CollectionUtils.isEmpty(files)) {
@@ -70,13 +71,13 @@ public class FileManagementController {
 
    @ResponseStatus(NO_CONTENT)
    @DeleteMapping("/{fileId}")
-   private void deleteFileVersion(@PathVariable Long fileId, @RequestParam Long version) throws InvalidFileArgException {
+   public void deleteFileVersion(@PathVariable Long fileId, @RequestParam Long version) throws InvalidFileArgException {
       fileService.deleteFileVersion(fileId, version);
    }
 
    @ResponseStatus(NO_CONTENT)
    @DeleteMapping("/{fileId}/all")
-   private void deleteAll(@PathVariable Long fileId) throws InvalidFileArgException {
+   public void deleteAll(@PathVariable Long fileId) throws InvalidFileArgException {
       fileService.deleteAllByFileId(fileId);
    }
 }
