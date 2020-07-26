@@ -1,0 +1,14 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    url: 'jdbc:h2:mem:files_db;DB_CLOSE_DELAY=-1'
+    username: sa
+    password: sa
+  jpa:
+    hibernate:
+      ddl-auto: create
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
