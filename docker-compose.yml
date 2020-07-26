@@ -1,0 +1,30 @@
+version: '3'
+services:
+  files-mysql:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: $FILES_MANAGEMENT_DB_NAME
+      MYSQL_USER: $FILES_MANAGEMENT_DB_USER
+      MYSQL_PASSWORD: $FILES_MANAGEMENT_DB_PASSWORD
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+
+  files-api:
+    restart: always
+    build: ./
+    expose:
+      - 8081
+    ports:
+      - 8081:8081
+    environment:
+#      For some reason, the application.yml in the classpath isn't being honored
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:mysql://files-mysql:3306/$FILES_MANAGEMENT_DB_NAME
+      SPRING_DATASOURCE_USERNAME: $FILES_MANAGEMENT_DB_USER
+      SPRING_DATASOURCE_PASSWORD: $FILES_MANAGEMENT_DB_PASSWORD
+      SPRING_JPA_HIBERNATE_DDL-AUTO: create
+      SPRING_SERVLET_MULTIPART_MAX-FILE-SIZE: 5MB
+      SPRING_SERVLET_MULTIPART_MAX-REQUEST-SIZE: 10MB
+    depends_on:
+      - files-mysql
