@@ -1,6 +1,7 @@
 package io.carba.filemanagement.services.impl;
 
 import io.carba.filemanagement.dtos.FileDto;
+import io.carba.filemanagement.exceptions.FileNotFoundException;
 import io.carba.filemanagement.exceptions.InvalidFileArgException;
 import io.carba.filemanagement.model.File;
 import io.carba.filemanagement.repositories.FileRepository;
@@ -37,7 +38,7 @@ public class FileServiceImpl implements FileService {
       Long last = fileRepository.countExistingByFileId();
 
       File newFile = File.builder()
-            .fileId(last == null ? 1L : last + 1L)
+            .fileId(last == null || last == 0L ? 1L : last + 1L)
             .filename(filename)
             .description(description)
             .mediaType(mediaType)
@@ -49,7 +50,7 @@ public class FileServiceImpl implements FileService {
    }
 
    @Override
-   public File editFile(Long fileId, FileDto.Request update, byte[] contents) throws InvalidFileArgException {
+   public File editFile(Long fileId, FileDto.Request update, byte[] contents) throws InvalidFileArgException, FileNotFoundException {
       if (fileId == null) {
          throw new InvalidFileArgException("File ID must be provided");
       }
@@ -61,13 +62,17 @@ public class FileServiceImpl implements FileService {
 
       File oldFile = fileRepository.findFirstByFileIdOrderByVersionDesc(fileId);
 
+      if (oldFile == null) {
+         throw new FileNotFoundException(fileId);
+      }
+
       File updatedFile = File.builder()
             .fileId(oldFile.getFileId())
             .filename(isEmpty(filename) ? oldFile.getFilename() : filename)
             .description(isEmpty(description) ? oldFile.getDescription() : description)
             .mediaType(isEmpty(mediaType) ? oldFile.getMediaType() : mediaType)
             .contents(emptyContents ? oldFile.getContents() : contents)
-            .version(emptyContents ? null : oldFile.getVersion() + 1L)
+            .version(oldFile.getVersion() + 1L)
             .build();
 
       return fileRepository.save(updatedFile);

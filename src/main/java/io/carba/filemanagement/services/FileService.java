@@ -1,6 +1,7 @@
 package io.carba.filemanagement.services;
 
 import io.carba.filemanagement.dtos.FileDto;
+import io.carba.filemanagement.exceptions.FileNotFoundException;
 import io.carba.filemanagement.exceptions.InvalidFileArgException;
 import io.carba.filemanagement.model.File;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 public interface FileService {
    File createFile(FileDto.Request create, byte[] contents) throws InvalidFileArgException;
 
-   File editFile(Long fileId, FileDto.Request update, byte[] contents) throws InvalidFileArgException;
+   File editFile(Long fileId, FileDto.Request update, byte[] contents) throws InvalidFileArgException, FileNotFoundException;
 
    File getFileVersion(Long fileId, Long version) throws InvalidFileArgException;
 

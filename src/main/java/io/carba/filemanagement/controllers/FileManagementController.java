@@ -33,7 +33,7 @@ public class FileManagementController {
    @ResponseStatus(NO_CONTENT)
    @PutMapping(value = "/{fileId}")
    private void editFile(@PathVariable Long fileId, @ModelAttribute FileDto.Request fileData)
-         throws InvalidFileArgException, IOException {
+         throws InvalidFileArgException, IOException, FileNotFoundException {
       if (fileId == null) {
          throw new InvalidFileArgException("File ID must be provided");
       }
