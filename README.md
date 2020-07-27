@@ -6,6 +6,7 @@ A small REST API to allow clients to manage files using Spring Boot 2.3 and MySQ
 
 - [File Management API](#file-management-api)
   * [How To Run](#how-to-run)
+  * [Running Tests](#running-tests)
   * [Endpoints](#endpoints)
     + [POST /files](#post-files)
         * [Form Params](#form-params)
@@ -39,19 +40,29 @@ A small REST API to allow clients to manage files using Spring Boot 2.3 and MySQ
 
 ## How To Run
 1. Clone repo by running:
-    ```
+    ```shell script
     git clone git@github.com:jcarbad/file-management-api.git
     ```
 2. Build and package application with:
-   ```
+   ```shell script
    mvn clean package
    ```
 3. Run the app as containerized services with Docker Compose:
-   ```
+   ```shell script
    docker-compose up --build
    ```
 4. Application should be running under **_localhost:8081/files_**.
 <hr />
+
+## Running Tests
+- **Unit Tests:**
+    ```shell script
+    mvn test
+    ```
+- **Integration Tests:**
+    ```shell script
+    mvn test-compile failsafe:integration-test 
+    ```
 
 ## Endpoints
 ### POST /files
