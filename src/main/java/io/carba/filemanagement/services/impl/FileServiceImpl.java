@@ -12,6 +12,11 @@ import java.util.List;
 import java.util.stream.Stream;
 import static org.springframework.util.StringUtils.isEmpty;
 
+/**
+ * Implementation of the @FileService service that uses a Spring Data JPA repository to access storage.
+ *
+ * @author Armando Carballo <jcarbad@gmail.com>
+ * */
 @Service
 public class FileServiceImpl implements FileService {
 

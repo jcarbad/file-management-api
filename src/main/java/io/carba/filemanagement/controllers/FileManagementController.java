@@ -24,7 +24,6 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
  *    @see io.carba.filemanagement.controllers.advice.ControllerExceptionHandler
  *    @author Armando Carballo <jcarbad@gmail.com>
  * */
-
 @RestController
 @RequestMapping("files")
 public class FileManagementController {

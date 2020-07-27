@@ -11,6 +11,12 @@ import java.time.LocalDateTime;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
+/**
+ *
+ * Main entity to represent an actual file stored in our database. Uses an ID as primary key to identify a individual entry.
+ * Uses the fileId as a parent, or grouping, ID to identify the different versions of a same File entity.
+ *
+ * */
 @Data
 @Builder
 @AllArgsConstructor

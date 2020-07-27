@@ -19,6 +19,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
  *
  *    @see ExceptionHandler
  *    @see org.springframework.web.bind.annotation.ControllerAdvice
+ *    @author Armando Carballo <jcarbad@gmail.com>
  */
 
 @RestControllerAdvice

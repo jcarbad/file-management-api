@@ -6,6 +6,9 @@ import lombok.Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Representation of a file version sub-resource that will depend on a FileDto resource.
+ **/
 @Data
 @Builder
 public class FileVersionDto {

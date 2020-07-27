@@ -9,7 +9,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import static java.util.Collections.singletonList;
 
+/**
+ * Base class for the input/output representation of our REST API.
+ *
+ * @author Armando Carballo <jcarbad@gmail.com>
+ * */
+
 public class FileDto {
+
+   /**
+    * Input representation of a file resource.
+    * */
    @Data
    @Builder
    @NoArgsConstructor
@@ -22,6 +32,10 @@ public class FileDto {
       private MultipartFile file;
    }
 
+
+   /**
+    * Output representation of a file resource.
+    * */
    @Data
    @Builder
    public static class Response {
