@@ -11,6 +11,16 @@ import javax.servlet.http.HttpServletRequest;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+/**
+ *
+ *    A convenience class to advice and handle exceptions within our REST controllers' context, via an @ExceptionHandler
+ *    that will be picked on the first advice with a matching exception handler method for each request, and respond
+ *    accordingly with a nice @ResponseBody
+ *
+ *    @see ExceptionHandler
+ *    @see org.springframework.web.bind.annotation.ControllerAdvice
+ */
+
 @RestControllerAdvice
 public class ControllerExceptionHandler {
 
