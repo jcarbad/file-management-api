@@ -51,7 +51,7 @@ A small REST API to allow clients to manage files using Spring Boot 2.3 and MySQ
    ```
    docker-compose up --build
    ```
-4. Application should be running under _localhost:8081/files_
+4. Application should be running under **_localhost:8081/files_**.
 <hr />
 
 ## Endpoints
